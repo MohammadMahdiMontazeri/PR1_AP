@@ -17,11 +17,12 @@ class WarehouseManagmetSystem:
         setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/data/{warehouse_name}.csv'))
 
     def add_product(self, warehouse_number , no : int , name :str , stock : int):
-        warehouse_name = 'warehouse' + str(warehouse_number)
+        warehouse_name = f'warehouse{warehouse_number}'
         df = pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/data/{warehouse_name}.csv')
         dfn = pd.DataFrame({'id':[no],'name': [name],'stock': [stock]})
         df = pd.concat([dfn , df])
         df.to_csv(f'/Users/mohammad/Desktop/PR1_AP/data/{warehouse_name}.csv' , index = False)
+        
         setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/data/{warehouse_name}.csv'))
 
     def update_warehouse(self, warehouse_number , file_location):
