@@ -5,6 +5,76 @@ class WarehouseManagmetSystem:
     def __init__(self):
         self.warehouse1 = pd.read_csv('/Users/mohammad/Desktop/PR1_AP/warehouse_data/Warehouse1.csv')
 
+    def warehouse_update_after_sale(self , no , amount):
+
+        def dict_for_a_id(no):
+
+            def warehouse_to_dict():
+
+                list_of_dicts = []
+                for file in os.listdir('/Users/mohammad/Desktop/PR1_AP/warehouse_data/'):
+                    if file.endswith('.csv'):
+                        df = pd.read_csv(os.path.join('/Users/mohammad/Desktop/PR1_AP/warehouse_data/',file))
+                        warehouse_number = file[9:-4]   
+                        d = df.set_index('id').to_dict(orient='index')
+                        d = {k: list(v.values()) for k, v in d.items()}
+                        d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+                        d2['warehouse_id'] = int(warehouse_number)
+                        list_of_dicts.append(d2)
+
+                return list_of_dicts
+
+            _dict = {}
+            for i in range(len(warehouse_to_dict())):
+
+                if no in list(warehouse_to_dict()[i].keys()):
+                    _dict[warehouse_to_dict()[i]['warehouse_id']] = warehouse_to_dict()[i][no]
+
+                else:
+                    _dict[warehouse_to_dict()[i]['warehouse_id']] = 0
+
+            return _dict
+
+        def decreasing_from_warehouse(warehouse_number , no , amount):
+
+            warehouse_name = f'warehouse{warehouse_number}'     
+            df = pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
+            d = df.set_index('id').to_dict(orient='index')
+            d = {k: list(v.values()) for k, v in d.items()}
+            d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+
+            d2[no] -= amount
+
+            d2 = pd.DataFrame.from_dict(d2, orient='index', columns = ['stock'])
+            d2.index.name = 'id'
+
+            d2.to_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
+
+            setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv'))
+
+
+        warehouse_number = 0
+
+        for i in dict_for_a_id(no).keys():
+            if amount <= dict_for_a_id(no)[i]:
+                warehouse_number = i
+                break
+
+        if warehouse_number != 0:
+            decreasing_from_warehouse(warehouse_number , no , amount)
+
+        else:
+            for i in dict_for_a_id(no).keys():
+                if dict_for_a_id(no)[i] != 0:
+                    if amount > dict_for_a_id(no)[i]:
+                        amount -= dict_for_a_id(no)[i]
+                        decreasing_from_warehouse(i , no , dict_for_a_id(no)[i])
+                        continue
+                        
+                    else:
+                        decreasing_from_warehouse(i , no , amount)
+                        break
+
     def new_warehouse(self):
         n = 1
         for file in os.listdir('/Users/mohammad/Desktop/PR1_AP/warehouse_data/'):
