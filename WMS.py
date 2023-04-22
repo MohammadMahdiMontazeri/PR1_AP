@@ -36,12 +36,61 @@ class WarehouseManagmetSystem:
         
         warehouse_name = f'warehouse{warehouse_number}'     
         ware_old = pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
+
         #
         
         ware_new.to_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv' , index = False)
         
         setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv'))
 
+    def update_warehouse_manual(self , warehouse_number , no , stock):
         
+        warehouse_name = f'warehouse{warehouse_number}'     
 
+        df = pd.DataFrame({'id':[no],'stock': [stock]})
+        ware_old = pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
 
+                
+        #changed the dataframe to a dictionary
+        d = df.set_index('id').to_dict(orient='index')
+        d = {k: list(v.values()) for k, v in d.items()}
+        d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+
+        #changed the dataframe to a dictionary
+        e = ware_old.set_index('id').to_dict(orient='index')
+        e = {k: list(v.values()) for k, v in e.items()}
+        e2 = {k: int(''.join(map(str, v))) for k, v in e.items()}
+
+        ware_new = e2 | d2
+
+        ware_new = pd.DataFrame.from_dict(ware_new, orient='index', columns = ['stock'])
+        ware_new.index.name = 'id'
+
+        ware_new.to_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
+        
+        setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv'))
+
+    def total_stock(self):
+        
+        dict_total = {}
+        for file in os.listdir('/Users/mohammad/Desktop/PR1_AP/warehouse_data/'):
+            if file.endswith('.csv'):
+                df = pd.read_csv(os.path.join('/Users/mohammad/Desktop/PR1_AP/warehouse_data/',file))
+                
+                d = df.set_index('id').to_dict(orient='index')
+                d = {k: list(v.values()) for k, v in d.items()}
+                d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+                
+                for i in d2.keys():
+                    if i in dict_total.keys():
+                        dict_total[i] += d2[i]
+                    else:
+                        dict_total[i] = d2[i]
+
+        total_stock = pd.DataFrame.from_dict(dict_total, orient='index', columns = ['stock'])
+        total_stock.index.name = 'id'
+
+        total_stock.to_csv('/Users/mohammad/Desktop/PR1_AP/total_stock/total_stock.csv')
+
+        return(dict_total)
+    
