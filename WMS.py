@@ -94,3 +94,19 @@ class WarehouseManagmetSystem:
 
         return(dict_total)
     
+    def warehouse_status(self , _type : str):
+        
+        df = pd.DataFrame({'id':[],'stock': [] , 'warehouse' : []})
+        for file in os.listdir('/Users/mohammad/Desktop/PR1_AP/warehouse_data/'):
+            if file.endswith('.csv'):
+                warehouse_number = file[9:-4]
+                dfn = pd.read_csv(os.path.join('/Users/mohammad/Desktop/PR1_AP/warehouse_data/',file))
+                dfn['warehouse'] = warehouse_number
+                df = pd.concat([dfn , df])
+                
+        if _type == 'csv':
+            df.to_csv('/Users/mohammad/Desktop/PR1_AP/warehouse_status/warehouse_status.csv' , index = False)
+        elif _type == 'txt':
+            df.to_csv('/Users/mohammad/Desktop/PR1_AP/warehouse_status/warehouse_status.txt' , sep = '\t' ,  index = False)            
+        
+        
