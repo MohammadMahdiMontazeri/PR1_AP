@@ -107,10 +107,23 @@ class WarehouseManagmetSystem:
         warehouse_name = f'warehouse{warehouse_number}'     
         ware_old = pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
 
-        #
-        
-        ware_new.to_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv' , index = False)
-        
+        #changed the dataframe to a dictionary
+        d = df.set_index('id').to_dict(orient='index')
+        d = {k: list(v.values()) for k, v in d.items()}
+        d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+
+        #changed the dataframe to a dictionary
+        e = ware_old.set_index('id').to_dict(orient='index')
+        e = {k: list(v.values()) for k, v in e.items()}
+        e2 = {k: int(''.join(map(str, v))) for k, v in e.items()}
+
+        ware_new = e2 | d2
+
+        ware_new = pd.DataFrame.from_dict(ware_new, orient='index', columns = ['stock'])
+        ware_new.index.name = 'id'
+
+        ware_new.to_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv')
+
         setattr(WarehouseManagmetSystem, warehouse_name, pd.read_csv(f'/Users/mohammad/Desktop/PR1_AP/warehouse_data/{warehouse_name}.csv'))
 
     def update_warehouse_manual(self , warehouse_number , no , stock):
