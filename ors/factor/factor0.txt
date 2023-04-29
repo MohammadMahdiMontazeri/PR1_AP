@@ -1,0 +1,4 @@
+product id : price
+3475m : 5000
+6666s : 7000
+Your addres is : sanandaj.Name : amyar sio.Delivery time :morning.Your delivery type is : hand
