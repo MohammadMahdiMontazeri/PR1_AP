@@ -189,25 +189,42 @@ class WarehouseManagmentSystem:
     
     def total_stock_data(self):
         
-        dict_total = {}
+        dict_total1 = {}
+        dict_total2 = {}
         for file in os.listdir(f'{cwd}/warehouse_data/'):
             if file.endswith('.csv'):
+                
                 df = pd.read_csv(os.path.join(f'{cwd}/warehouse_data/',file))[['id','stock']]
+                dfn = pd.read_csv(os.path.join(f'{cwd}/warehouse_data/',file))[['id','price']]
                 
                 d = df.set_index('id').to_dict(orient='index')
                 d = {k: list(v.values()) for k, v in d.items()}
                 d2 = {k: int(''.join(map(str, v))) for k, v in d.items()}
+
+
+                e = dfn.set_index('id').to_dict(orient='index')
+                e = {k: list(v.values()) for k, v in e.items()}
+                e2 = {k: int(''.join(map(str, v))) for k, v in e.items()}
                 
                 for i in d2.keys():
-                    if i in dict_total.keys():
-                        dict_total[i] += d2[i]
+                    if i in dict_total1.keys():
+                        dict_total1[i] += d2[i]
                     else:
-                        dict_total[i] = d2[i]
+                        dict_total1[i] = d2[i]
+                        
+                for i in e2.keys():
+                    if i not in dict_total2.keys():
+                        dict_total2[i] = e2[i]
 
-        total_stock = pd.DataFrame.from_dict(dict_total, orient='index', columns = ['stock'])
+        total_stock = pd.DataFrame.from_dict(dict_total1, orient='index', columns = ['stock'])
         total_stock.index.name = 'id'
 
-        total_stock.to_csv(f'{cwd}/total_stock/total_stock.csv')
+        total_price = pd.DataFrame.from_dict(dict_total2, orient='index', columns = ['price'])
+        total_price.index.name = 'id'
+
+        merged_df = pd.merge(total_stock , total_price , on = 'id')
+
+        merged_df.to_csv(f'{cwd}/total_stock/total_stock.csv')
     
     def warehouse_status(self , _type : str):
         
@@ -223,3 +240,12 @@ class WarehouseManagmentSystem:
             df.to_csv(f'{cwd}/warehouse_status/warehouse_status.csv' , index = False)
         elif _type == 'txt':
             df.to_csv(f'{cwd}/warehouse_status/warehouse_status.txt' , sep = '\t' ,  index = False)
+
+    def check_ID_is_correct(self , ID):
+        df = pd.read_csv(f'{cwd}/total_stock/total_stock.csv')[['id']]
+        df = pd.Series(df.squeeze())
+        df_list = df.tolist()
+        if ID in df_list:
+            return True
+        else:
+            return False

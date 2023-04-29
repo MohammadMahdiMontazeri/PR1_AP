@@ -2,7 +2,9 @@ import WMS
 import LS
 import ORS
 import AMS
-
+import pandas as pd
+import os
+cwd = os.getcwd()
 
 class OnlineShop():
 
@@ -22,6 +24,7 @@ def start():
     if ne == '1':
         return seller()
     elif ne == '2':
+        store.warehouse.total_stock_data()
         return customer()
     
 def seller():
@@ -93,7 +96,7 @@ def choose2():
     if nx == '1':
         return csv()
     
-    if nx == '2':
+    elif nx == '2':
         return txt()
     
     elif nx == '*':
@@ -112,12 +115,31 @@ def txt():
     print('The warehouse status was saved as txt\n')
     return choose2()
 
-
-
-
-
 def customer():
-    pass
+    print(pd.read_csv(f'{cwd}/total_stock/total_stock.csv'),'\n\nPleaes enter a ID for adding to your cart\n&.cart\n$.settlement\n# start\n')
+    nc = input()
+
+    if nc == '&':
+        return cart()
+    
+    elif nc == '$':
+        return settlement()
+    
+    elif nc == '#':
+        return start()
+    
+    else:
+        if store.warehouse.check_ID_is_correct(nc):
+            stock = int(input('Pleas ......\n'))
+            if store.warehouse.total_stock()[nc] >= stock:
+                print ('mitone bekhare')
+                return customer()
+            else:
+                print('nemitone')
+        else:
+            print('The ID you entered is incorrect, please try again.\n')
+            return customer()
+
 
 
 
