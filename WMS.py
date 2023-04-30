@@ -249,3 +249,10 @@ class WarehouseManagmentSystem:
             return True
         else:
             return False
+    
+    def check_warehouse_number(self , warehouse_number):
+        warehouse_name = f'warehouse{warehouse_number}.csv'   
+        if warehouse_name in os.listdir(f'{cwd}/warehouse_data/'):
+            return True
+        else:
+            return False
