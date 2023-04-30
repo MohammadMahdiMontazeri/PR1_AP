@@ -4,6 +4,9 @@ import ORS
 import AMS
 import pandas as pd
 import os
+import time
+import sys
+from tqdm import trange
 cwd = os.getcwd()
 
 class OnlineShop():
@@ -53,18 +56,22 @@ def seller():
 
 def add_product():
     ware_number = int(input('Please enter the warehouse number.\n'))
-    no = input('Please enter the product ID.\n')
-    stock = int(input('Please enter the product stock.\n'))
-    price = int(input('Please enter the price of the product.\n'))
-    store.warehouse.add_product(ware_number , no , stock , price)
-    print('Product added successfully.\n')
-    return seller()
-
+    if store.warehouse.check_warehouse_number(ware_number):
+        no = input('Please enter the product ID.\n')
+        stock = int(input('Please enter the product stock.\n'))
+        price = int(input('Please enter the price of the product.\n'))
+        store.warehouse.add_product(ware_number , no , stock , price)
+        print('Product added successfully.\n')
+        return seller()
+    else:
+        print('warehouse number is incorrect.\n')
+        return add_product()
+    
 def choose1():
     nx = input('1.Update with file location\n2.Update manually\n* back\n# start\n')  
 
     if nx == '1':
-        return file_location()
+        return file_locations()
     
     if nx == '2':
         return update_manuall()
@@ -75,21 +82,29 @@ def choose1():
     elif nx == '#':
         return start()
     
-def file_location():
+def file_locations():
     ware_number = int(input('Please enter the warehouse number.\n'))
-    file_location = input('Please enter the file location\n')
-    store.warehouse.update_warehouse(ware_number , file_location)
-    print(f'Warehouse number {ware_number} updated.\n')
-    return choose1()
+    if store.warehouse.check_warehouse_number(ware_number):
+        file_location = input('Please enter the file location\n')
+        store.warehouse.update_warehouse(ware_number , file_location)
+        print(f'Warehouse number {ware_number} updated.\n')
+        return choose1()
+    else:
+        print('warehouse number is incorrect.\n')
+        return file_locations()
 
 def update_manuall():
     warehouse_number , no , stock = input('Please enter the information in the format below.\nWarehouse number:ID:stock\n').split(':')
     warehouse_number = int(warehouse_number)
     stock = int(stock)
-    store.warehouse.update_warehouse_manual(warehouse_number , no , stock)
-    print(f'Warehouse number {warehouse_number} updated.\n')
-    return choose1()
-
+    if store.warehouse.check_warehouse_number(warehouse_number):
+        store.warehouse.update_warehouse_manual(warehouse_number , no , stock)
+        print(f'Warehouse number {warehouse_number} updated.\n')
+        return choose1()
+    else:
+        print('warehouse number is incorrect.\n')
+        return update_manuall() 
+    
 def choose2():
     nx = input('1.csv\n2.txt\n* back\n# start\n')  
 
@@ -116,7 +131,9 @@ def txt():
     return choose2()
 
 def customer():
-    print(pd.read_csv(f'{cwd}/total_stock/total_stock.csv'),'\n\nPleaes enter a ID for adding to your cart\n&.cart\n$.settlement\n# start\n')
+    df = pd.read_csv(f'{cwd}/total_stock/total_stock.csv')
+    df.loc[df['stock'] == 0 , 'price'] = 'unavailable'
+    print(df,'\n\nPleaes enter a ID for adding to your cart\n&.cart\n$.settlement\n# start\n')
     nc = input()
 
     if nc == '&':
@@ -130,17 +147,24 @@ def customer():
     
     else:
         if store.warehouse.check_ID_is_correct(nc):
-            stock = int(input('Pleas ......\n'))
-            if store.warehouse.total_stock()[nc] >= stock:
-                print ('mitone bekhare')
+            if store.warehouse.total_stock()[nc] == 0 :
+                print('Sorry, thid product is currently unavailable\n')
                 return customer()
             else:
-                print('nemitone')
+                stock = int(input('Pleas ......\n'))
+                if store.warehouse.total_stock()[nc] >= stock:
+                    print ('mitone bekhare')
+                    return customer()
+                else:
+                    print('nemitone')
         else:
             print('The ID you entered is incorrect, please try again.\n')
             return customer()
 
 
 
-
+for i in trange(20, file=sys.stdout, desc='starting'):
+    time.sleep(.3)
+print('\n')
+time.sleep(0.5)
 start()
