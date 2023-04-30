@@ -164,7 +164,7 @@ def customer():
 
 
 for i in trange(20, file=sys.stdout, desc='starting'):
-    time.sleep(.5)
+    time.sleep(.3)
 print('\n')
 time.sleep(0.5)
 start()

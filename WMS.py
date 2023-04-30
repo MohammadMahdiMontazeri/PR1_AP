@@ -232,7 +232,10 @@ class WarehouseManagmentSystem:
         for file in os.listdir(f'{cwd}/warehouse_data/'):
             if file.endswith('.csv'):
                 warehouse_number = file[9:-4]
-                dfn = pd.read_csv(os.path.join(f'{cwd}/warehouse_data/',file))[['id','stock']]
+                dfn = pd.read_csv(os.path.join(f'{cwd}/warehouse_data/',file))[['id']]
+                dfs = pd.read_csv(os.path.join(f'{cwd}/warehouse_data/',file))[['stock']]
+                dfs = dfs.applymap(str)
+                dfn['stock'] = dfs
                 dfn['warehouse'] = warehouse_number
                 df = pd.concat([dfn , df])
                 
