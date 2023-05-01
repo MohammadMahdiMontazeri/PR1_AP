@@ -1,7 +1,6 @@
 import pandas as pd
 import random 
 import os
-import time
 cwd = os.getcwd()
 
 class OrderRegistrationSystem:
@@ -11,35 +10,23 @@ class OrderRegistrationSystem:
     def add_to_cart(self,no,amount):
         self.cart.update({no : amount})
 
-
     def remove_from_cart(self,no):
         if no in self.cart.keys():
             if int(self.cart[no]) >= 1:
                 self.cart[no] = str(int(self.cart[no]) - 1)
 
     def add_price_to_cart(self): 
-        df = pd.read_csv(f'{cwd}/total_stock/total_stock.csv')
-        my_dict = df.to_dict()
-        # print(df)
-        cart_with_price = {}
-        for i in df.loc[:, 'id']:
-            for j in df.loc[:, 'price']:
-                cart_with_price.update({i : j})
-        cart2 = {k : [self.cart.get(k),cart_with_price.get(k)] for k in self.cart.keys() | cart_with_price.keys()}
-        cart2 = {k: v for k, v in cart2.items() if v[0] != None}
-        for c in cart2:
-            cart2[c] = tuple(cart2[c])
-        # print(cart2)
-        cart_df = pd.DataFrame(cart2)
-        cart_df = cart_df.transpose()
-        cart_df.columns = ['Stock', 'Price']
-        cart_df.index.name = 'ID'
+        df = pd.read_csv(f'{cwd}/total_stock/total_stock.csv')[['id','price']]
+        a = self.cart
+        dfn = pd.DataFrame.from_dict(a, orient = 'index', columns = ['stock'])
+        dfn.index.name = 'id'
+        cart_df = pd.merge(dfn,df,on = 'id')
         cart_df.to_csv(f'{cwd}/cart/cart.csv')
         df = pd.read_csv(f'{cwd}/cart/cart.csv')
 
     def show_cart(self):
         df = pd.read_csv(f'{cwd}/cart/cart.csv')
-        df['Total unit price'] = df ['Price'] * df['Stock']
+        df['Total unit price'] = df ['price'] * df['stock']
         total_price = df.loc[:, 'Total unit price'].sum()
         print(f'{df}\n\nYour total price is : {total_price}\n')
     
@@ -72,7 +59,7 @@ class OrderRegistrationSystem:
                 if file.endswith('.txt'):
                     m += 1
             factor_path = f'{cwd}/ors/factor/factor{m}.txt'
-            cart = pd.read_csv(f'{cwd}/cart/cart.csv')[['ID','Price']]
+            cart = pd.read_csv(f'{cwd}/cart/cart.csv')[['id','price']]
             file = open(factor_path,'w')
             file.write(f'\n{self.cart}\n\nYour addres is : {addres}.\nOrder number : {rnd}.\nName : {full_name}.\nDelivery time :{timee}.\nYour delivery type is : {delivery_type}')
             file.close()
@@ -99,4 +86,3 @@ class OrderRegistrationSystem:
             dfn['Tax'] = (dfn['Total price'] + dfn   ['Transport Price']) * 1.09
             df = pd.concat([df,dfn])
             df.to_csv(f'{cwd}/ams/Accounting.csv')
-
