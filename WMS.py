@@ -226,7 +226,7 @@ class WarehouseManagmentSystem:
 
         merged_df.to_csv(f'{cwd}/total_stock/total_stock.csv')
     
-    def warehouse_status(self , _type : str):
+    def warehouse_status(self , _type : str , file_location):
         
         df = pd.DataFrame({'id':[],'stock': [] , 'warehouse' : []})
         for file in os.listdir(f'{cwd}/warehouse_data/'):
@@ -240,9 +240,9 @@ class WarehouseManagmentSystem:
                 df = pd.concat([dfn , df])
                 
         if _type == 'csv':
-            df.to_csv(f'{cwd}/warehouse_status/warehouse_status.csv' , index = False)
+            df.to_csv(f'{file_location}warehouse_status.csv' , index = False)
         elif _type == 'txt':
-            df.to_csv(f'{cwd}/warehouse_status/warehouse_status.txt' , sep = '\t' ,  index = False)
+            df.to_csv(f'{file_location}warehouse_status.txt' , sep = '\t' ,  index = False)
 
     def check_ID_is_correct(self , ID):
         df = pd.read_csv(f'{cwd}/total_stock/total_stock.csv')[['id']]
