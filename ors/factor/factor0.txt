@@ -1,0 +1,9 @@
+      id    price
+0  1245g  3000000
+1  1008g    20000
+
+Your address is : Tabriz , Jolfa
+Order number : 56328061036
+Name : MohammadMahdiMontazeri
+Delivery time : Noon
+Your delivery type is : post
