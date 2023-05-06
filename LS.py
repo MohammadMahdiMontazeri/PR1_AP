@@ -29,16 +29,16 @@ class LogisticsSystem:
     def delivery_time_allocation(self):
 
         if self._dict['Noon'] < 3 and self._dict['Afternoon'] < 3 :
-            print('1.Morning\n2.Noon\n3.Afternoon\nb.back\ns.start')
+            print('1.Morning\n2.Noon\n3.Afternoon')
         
         elif self._dict['Noon'] > 2 and self._dict['Afternoon'] < 3 :
-            print('1.Morning\n\n3.Afternoon\nb.back\ns.start')
+            print('1.Morning\n\n3.Afternoon')
         
         elif self._dict['Noon'] < 3 and self._dict['Afternoon'] > 2 :
-            print('1.Morning\n2.Noon\n\nb.back\ns.start')
+            print('1.Morning\n2.Noon\n')
         
         elif self._dict['Noon'] > 2 and self._dict['Afternoon'] > 2 :
-            print('1.Morning\n\n\nb.back\ns.start')
+            print('1.Morning\n\n')
 
     def update_dict(self , no : int):
 
@@ -50,3 +50,14 @@ class LogisticsSystem:
 
         elif no == 3:        
             self._dict['Afternoon'] += 1
+    
+    def _time(self , no:int):
+        
+        if no == 1:
+            return 'Morning'
+        
+        elif no == 2:
+            return 'Noon'
+        
+        elif no == 3:
+            return 'Afternoon'
